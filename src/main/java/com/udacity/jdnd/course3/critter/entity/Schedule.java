@@ -4,7 +4,9 @@ import com.udacity.jdnd.course3.critter.user.EmployeeSkill;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Schedule {
@@ -30,7 +32,7 @@ public class Schedule {
 
     @ElementCollection
     @Enumerated(EnumType.STRING)
-    private List<EmployeeSkill> skills;
+    private Set<EmployeeSkill> skills = new HashSet<>();
 
     private LocalDate scheduleDate;
 }
