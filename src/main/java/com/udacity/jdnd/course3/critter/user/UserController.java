@@ -2,6 +2,7 @@ package com.udacity.jdnd.course3.critter.user;
 
 import com.udacity.jdnd.course3.critter.entity.Customer;
 import com.udacity.jdnd.course3.critter.entity.Employee;
+import com.udacity.jdnd.course3.critter.entity.Pet;
 import com.udacity.jdnd.course3.critter.service.CustomerService;
 import com.udacity.jdnd.course3.critter.service.EmployeeService;
 import org.springframework.beans.BeanUtils;
@@ -55,6 +56,16 @@ public class UserController {
         customers.forEach(customer -> {
             CustomerDTO customerDTO = new CustomerDTO();
             BeanUtils.copyProperties(customer, customerDTO);
+
+            List<Pet> customerPets = customer.getPets();
+            if (customerPets != null) {
+                List<Long> petIds = new ArrayList<>();
+                customerPets.forEach(pet -> {
+                    petIds.add(pet.getId());
+                });
+                customerDTO.setPetIds(petIds);
+            }
+
             customerDTOList.add(customerDTO);
         });
 
