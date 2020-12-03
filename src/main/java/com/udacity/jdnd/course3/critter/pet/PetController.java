@@ -31,12 +31,14 @@ public class PetController {
     @PostMapping
     public PetDTO savePet(@RequestBody PetDTO petDTO) {
         Pet pet = new Pet();
-        BeanUtils.copyProperties(petDTO, pet);
+        BeanUtils.copyProperties(petDTO, pet, "id");
 
         pet = this.petService.savePet(pet, petDTO.getOwnerId());
 
-        petDTO.setId(pet.getId());
-        return petDTO;
+        PetDTO newPetDTO = new PetDTO();
+        BeanUtils.copyProperties(pet, newPetDTO);
+        petDTO.setOwnerId(pet.getCustomer().getId());
+        return newPetDTO;
         //throw new UnsupportedOperationException();
     }
 

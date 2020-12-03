@@ -7,6 +7,7 @@ import com.udacity.jdnd.course3.critter.service.CustomerService;
 import com.udacity.jdnd.course3.critter.service.EmployeeService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
@@ -38,12 +39,13 @@ public class UserController {
     @PostMapping("/customer")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO){
         Customer customer = new Customer();
-        BeanUtils.copyProperties(customerDTO, customer);
+        BeanUtils.copyProperties(customerDTO, customer, "id");
 
         customer = this.customerService.saveCustomer(customer);
 
-        customerDTO.setId(customer.getId());
-        return customerDTO;
+        CustomerDTO newCustomerDTO = new CustomerDTO();
+        BeanUtils.copyProperties(customer, newCustomerDTO);
+        return newCustomerDTO;
 
         //throw new UnsupportedOperationException();
     }
@@ -82,12 +84,13 @@ public class UserController {
     @PostMapping("/employee")
     public EmployeeDTO saveEmployee(@RequestBody EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
-        BeanUtils.copyProperties(employeeDTO, employee);
+        BeanUtils.copyProperties(employeeDTO, employee, "id");
 
         employee = this.employeeService.saveEmployee(employee);
 
-        employeeDTO.setId(employee.getId());
-        return employeeDTO;
+        EmployeeDTO newEmployeeDTO = new EmployeeDTO();
+        BeanUtils.copyProperties(employee, newEmployeeDTO);
+        return newEmployeeDTO;
 
         //throw new UnsupportedOperationException();
     }

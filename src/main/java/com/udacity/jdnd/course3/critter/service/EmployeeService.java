@@ -2,8 +2,11 @@ package com.udacity.jdnd.course3.critter.service;
 
 import com.udacity.jdnd.course3.critter.entity.Employee;
 import com.udacity.jdnd.course3.critter.repository.EmployeeRepository;
+import com.udacity.jdnd.course3.critter.user.EmployeeNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class EmployeeService {
@@ -21,6 +24,11 @@ public class EmployeeService {
     }
 
     public Employee getEmployee(Long employeeId) {
-        return this.employeeRepository.getOne(employeeId);
+        Optional<Employee> optionalEmployee = this.employeeRepository.findById(employeeId);
+        if (!optionalEmployee.isPresent()) {
+            throw new EmployeeNotFoundException("Employee not found for ID " + employeeId);
+        }
+
+        return optionalEmployee.get();
     }
 }
