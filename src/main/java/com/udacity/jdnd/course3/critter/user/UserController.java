@@ -5,9 +5,9 @@ import com.udacity.jdnd.course3.critter.entity.Employee;
 import com.udacity.jdnd.course3.critter.entity.Pet;
 import com.udacity.jdnd.course3.critter.service.CustomerService;
 import com.udacity.jdnd.course3.critter.service.EmployeeService;
+import com.udacity.jdnd.course3.critter.service.PetService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
@@ -31,9 +31,13 @@ public class UserController {
     @Autowired
     EmployeeService employeeService;
 
-    public UserController(CustomerService customerService, EmployeeService employeeService) {
+    @Autowired
+    PetService petService;
+
+    public UserController(CustomerService customerService, EmployeeService employeeService, PetService petService) {
         this.customerService = customerService;
         this.employeeService = employeeService;
+        this.petService = petService;
     }
 
     @PostMapping("/customer")
@@ -78,7 +82,25 @@ public class UserController {
 
     @GetMapping("/customer/pet/{petId}")
     public CustomerDTO getOwnerByPet(@PathVariable long petId){
-        throw new UnsupportedOperationException();
+        Pet pet = this.petService.getPet(petId);
+        Customer customer = pet.getCustomer();
+
+        CustomerDTO customerDTO = new CustomerDTO();
+        if (customer != null) {
+            BeanUtils.copyProperties(customer, customerDTO);
+
+            List<Pet> customerPets = customer.getPets();
+            if (customerPets != null) {
+                List<Long> petIds = new ArrayList<>();
+                customerPets.forEach(customerPet -> {
+                    petIds.add(customerPet.getId());
+                });
+                customerDTO.setPetIds(petIds);
+            }
+        }
+
+        return customerDTO;
+        //throw new UnsupportedOperationException();
     }
 
     @PostMapping("/employee")
@@ -109,12 +131,26 @@ public class UserController {
 
     @PutMapping("/employee/{employeeId}")
     public void setAvailability(@RequestBody Set<DayOfWeek> daysAvailable, @PathVariable long employeeId) {
-        throw new UnsupportedOperationException();
+        this.employeeService.saveAvailability(daysAvailable, employeeId);
+
+        //throw new UnsupportedOperationException();
     }
 
-    @GetMapping("/employee/availability")
+    @PostMapping("/employee/availability")
     public List<EmployeeDTO> findEmployeesForService(@RequestBody EmployeeRequestDTO employeeDTO) {
-        throw new UnsupportedOperationException();
+
+        List<Employee> employees = this.employeeService.findEmployeeByDateAndSkills(employeeDTO.getDate(), employeeDTO.getSkills());
+
+        List<EmployeeDTO> employeeDTOList = new ArrayList<>();
+        employees.forEach(employee -> {
+            EmployeeDTO employeeDTOResult = new EmployeeDTO();
+            BeanUtils.copyProperties(employee, employeeDTOResult);
+
+            employeeDTOList.add(employeeDTOResult);
+        });
+
+        return employeeDTOList;
+        //throw new UnsupportedOperationException();
     }
 
 }
