@@ -1,5 +1,6 @@
 package com.udacity.jdnd.course3.critter.service;
 
+import com.google.common.collect.Lists;
 import com.udacity.jdnd.course3.critter.entity.Employee;
 import com.udacity.jdnd.course3.critter.entity.Pet;
 import com.udacity.jdnd.course3.critter.entity.Schedule;
@@ -47,5 +48,22 @@ public class ScheduleService {
 
     public List<Schedule> getAllSchedules() {
         return this.schedultRepository.findAll();
+    }
+
+    public List<Schedule> getScheduleForEmployee(Long employeeId) {
+        Employee employee = this.employeeService.getEmployee(employeeId);
+        return this.schedultRepository.findAllByEmployees(employee);
+    }
+
+    public List<Schedule> getScheduleForPetId(Long petId) {
+        Pet pet = this.petService.getPet(petId);
+
+        List<Pet> pets = Lists.newArrayList(pet);
+
+        return this.schedultRepository.findAllByPetsIn(pets);
+    }
+
+    public List<Schedule> getScheduleForPets(List<Pet> pets) {
+        return this.schedultRepository.findAllByPetsIn(pets);
     }
 }
