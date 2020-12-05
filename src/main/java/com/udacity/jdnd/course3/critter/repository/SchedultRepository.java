@@ -14,5 +14,6 @@ public interface SchedultRepository extends JpaRepository<Schedule, Long> {
     // Get all schedules by employee
     List<Schedule> findAllByEmployees(Employee employee);
 
+    // Get all schedules by pets
     List<Schedule> findAllByPetsIn(List<Pet> pets);
 }

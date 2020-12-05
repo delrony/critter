@@ -1,7 +1,6 @@
 package com.udacity.jdnd.course3.critter.schedule;
 
 import com.udacity.jdnd.course3.critter.entity.Customer;
-import com.udacity.jdnd.course3.critter.entity.Employee;
 import com.udacity.jdnd.course3.critter.entity.Pet;
 import com.udacity.jdnd.course3.critter.entity.Schedule;
 import com.udacity.jdnd.course3.critter.service.CustomerService;
@@ -36,72 +35,32 @@ public class ScheduleController {
         Schedule schedule = new Schedule();
 
         // Copy activities and date to the new schedule object
-        BeanUtils.copyProperties(scheduleDTO, schedule);
+        BeanUtils.copyProperties(scheduleDTO, schedule, "id");
 
         Schedule newSchedule = this.scheduleService.saveSchedule(schedule, scheduleDTO.getEmployeeIds(), scheduleDTO.getPetIds());
 
-        ScheduleDTO newScheduleDTO = new ScheduleDTO();
-        BeanUtils.copyProperties(newSchedule, newScheduleDTO);
-
-        return this.copyEmplyeeAndPetIds(newSchedule, newScheduleDTO);
-
-        //throw new UnsupportedOperationException();
+        return this.getDTOFromSchedule(newSchedule);
     }
 
     @GetMapping
     public List<ScheduleDTO> getAllSchedules() {
         List<Schedule> schedules = this.scheduleService.getAllSchedules();
 
-        List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
-        schedules.forEach(schedule -> {
-            ScheduleDTO scheduleDTO = new ScheduleDTO();
-            BeanUtils.copyProperties(schedule, scheduleDTO);
-
-            scheduleDTO = this.copyEmplyeeAndPetIds(schedule, scheduleDTO);
-
-            scheduleDTOList.add(scheduleDTO);
-        });
-
-        return scheduleDTOList;
-
-        // throw new UnsupportedOperationException();
+        return this.getDTOListFromSchedules(schedules);
     }
 
     @GetMapping("/pet/{petId}")
     public List<ScheduleDTO> getScheduleForPet(@PathVariable long petId) {
         List<Schedule> schedules = this.scheduleService.getScheduleForPetId(petId);
 
-        List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
-        schedules.forEach(schedule -> {
-            ScheduleDTO scheduleDTO = new ScheduleDTO();
-            BeanUtils.copyProperties(schedule, scheduleDTO);
-
-            scheduleDTO = this.copyEmplyeeAndPetIds(schedule, scheduleDTO);
-
-            scheduleDTOList.add(scheduleDTO);
-        });
-
-        return scheduleDTOList;
-
-        //throw new UnsupportedOperationException();
+        return this.getDTOListFromSchedules(schedules);
     }
 
     @GetMapping("/employee/{employeeId}")
     public List<ScheduleDTO> getScheduleForEmployee(@PathVariable long employeeId) {
         List<Schedule> schedules = this.scheduleService.getScheduleForEmployee(employeeId);
 
-        List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
-        schedules.forEach(schedule -> {
-            ScheduleDTO scheduleDTO = new ScheduleDTO();
-            BeanUtils.copyProperties(schedule, scheduleDTO);
-
-            scheduleDTO = this.copyEmplyeeAndPetIds(schedule, scheduleDTO);
-
-            scheduleDTOList.add(scheduleDTO);
-        });
-
-        return scheduleDTOList;
-        //throw new UnsupportedOperationException();
+        return this.getDTOListFromSchedules(schedules);
     }
 
     @GetMapping("/customer/{customerId}")
@@ -111,34 +70,41 @@ public class ScheduleController {
 
         List<Schedule> schedules = this.scheduleService.getScheduleForPets(customerPets);
 
+        return this.getDTOListFromSchedules(schedules);
+    }
+
+    private List<ScheduleDTO> getDTOListFromSchedules(List<Schedule> schedules) {
         List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
         schedules.forEach(schedule -> {
-            ScheduleDTO scheduleDTO = new ScheduleDTO();
-            BeanUtils.copyProperties(schedule, scheduleDTO);
-
-            scheduleDTO = this.copyEmplyeeAndPetIds(schedule, scheduleDTO);
-
-            scheduleDTOList.add(scheduleDTO);
+            scheduleDTOList.add(this.getDTOFromSchedule(schedule));
         });
 
         return scheduleDTOList;
-
-        //throw new UnsupportedOperationException();
     }
 
-    private ScheduleDTO copyEmplyeeAndPetIds(Schedule from, ScheduleDTO to) {
+    private ScheduleDTO getDTOFromSchedule(Schedule schedule) {
+        ScheduleDTO scheduleDTO = new ScheduleDTO();
+        BeanUtils.copyProperties(schedule, scheduleDTO);
+
+        this.copyEmpoyeesFromSchedule(schedule, scheduleDTO);
+        this.copyPetsFromSchedule(schedule, scheduleDTO);
+
+        return scheduleDTO;
+    }
+
+    private void copyEmpoyeesFromSchedule(Schedule from, ScheduleDTO to) {
         List<Long> employeeIds = new ArrayList<>();
         from.getEmployees().forEach(employee -> {
             employeeIds.add(employee.getId());
         });
         to.setEmployeeIds(employeeIds);
+    }
 
+    private void copyPetsFromSchedule(Schedule from, ScheduleDTO to) {
         List<Long> petIds = new ArrayList<>();
         from.getPets().forEach(pet -> {
             petIds.add(pet.getId());
         });
         to.setPetIds(petIds);
-
-        return to;
     }
 }

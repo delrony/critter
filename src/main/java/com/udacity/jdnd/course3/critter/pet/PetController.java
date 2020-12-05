@@ -1,6 +1,5 @@
 package com.udacity.jdnd.course3.critter.pet;
 
-import com.udacity.jdnd.course3.critter.entity.Customer;
 import com.udacity.jdnd.course3.critter.entity.Pet;
 import com.udacity.jdnd.course3.critter.service.CustomerService;
 import com.udacity.jdnd.course3.critter.service.PetService;
@@ -35,22 +34,16 @@ public class PetController {
 
         pet = this.petService.savePet(pet, petDTO.getOwnerId());
 
-        PetDTO newPetDTO = new PetDTO();
-        BeanUtils.copyProperties(pet, newPetDTO);
-        petDTO.setOwnerId(pet.getCustomer().getId());
+        PetDTO newPetDTO = this.getDTOFromPet(pet);
         return newPetDTO;
-        //throw new UnsupportedOperationException();
     }
 
     @GetMapping("/{petId}")
     public PetDTO getPet(@PathVariable long petId) {
         Pet pet = this.petService.getPet(petId);
-        PetDTO petDTO = new PetDTO();
-        BeanUtils.copyProperties(pet, petDTO);
-        petDTO.setOwnerId(pet.getCustomer().getId());
-        return petDTO;
 
-        //throw new UnsupportedOperationException();
+        PetDTO petDTO = this.getDTOFromPet(pet);
+        return petDTO;
     }
 
     @GetMapping
@@ -59,14 +52,11 @@ public class PetController {
 
         List<PetDTO> petDTOList = new ArrayList<>();
         pets.forEach(pet -> {
-            PetDTO petDTO = new PetDTO();
-            BeanUtils.copyProperties(pet, petDTO);
-            petDTO.setOwnerId(pet.getCustomer().getId());
+            PetDTO petDTO = this.getDTOFromPet(pet);
             petDTOList.add(petDTO);
         });
 
         return petDTOList;
-        //throw new UnsupportedOperationException();
     }
 
     @GetMapping("/owner/{ownerId}")
@@ -75,14 +65,18 @@ public class PetController {
 
         List<PetDTO> petDTOList = new ArrayList<>();
         pets.forEach(pet -> {
-            PetDTO petDTO = new PetDTO();
-            BeanUtils.copyProperties(pet, petDTO);
-            petDTO.setOwnerId(pet.getCustomer().getId());
+            PetDTO petDTO = this.getDTOFromPet(pet);
             petDTOList.add(petDTO);
         });
 
         return petDTOList;
+    }
 
-        //throw new UnsupportedOperationException();
+    private PetDTO getDTOFromPet(Pet pet) {
+        PetDTO petDTO = new PetDTO();
+        BeanUtils.copyProperties(pet, petDTO);
+        petDTO.setOwnerId(pet.getCustomer().getId());
+
+        return petDTO;
     }
 }

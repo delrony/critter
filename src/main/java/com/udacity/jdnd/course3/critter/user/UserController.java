@@ -50,8 +50,6 @@ public class UserController {
         CustomerDTO newCustomerDTO = new CustomerDTO();
         BeanUtils.copyProperties(customer, newCustomerDTO);
         return newCustomerDTO;
-
-        //throw new UnsupportedOperationException();
     }
 
     @GetMapping("/customer")
@@ -60,24 +58,10 @@ public class UserController {
 
         List<CustomerDTO> customerDTOList = new ArrayList<>();
         customers.forEach(customer -> {
-            CustomerDTO customerDTO = new CustomerDTO();
-            BeanUtils.copyProperties(customer, customerDTO);
-
-            List<Pet> customerPets = customer.getPets();
-            if (customerPets != null) {
-                List<Long> petIds = new ArrayList<>();
-                customerPets.forEach(pet -> {
-                    petIds.add(pet.getId());
-                });
-                customerDTO.setPetIds(petIds);
-            }
-
-            customerDTOList.add(customerDTO);
+            customerDTOList.add(this.getDTOFromCustomer(customer));
         });
 
         return customerDTOList;
-
-        //throw new UnsupportedOperationException();
     }
 
     @GetMapping("/customer/pet/{petId}")
@@ -85,6 +69,10 @@ public class UserController {
         Pet pet = this.petService.getPet(petId);
         Customer customer = pet.getCustomer();
 
+        return this.getDTOFromCustomer(customer);
+    }
+
+    private CustomerDTO getDTOFromCustomer(Customer customer) {
         CustomerDTO customerDTO = new CustomerDTO();
         if (customer != null) {
             BeanUtils.copyProperties(customer, customerDTO);
@@ -100,7 +88,6 @@ public class UserController {
         }
 
         return customerDTO;
-        //throw new UnsupportedOperationException();
     }
 
     @PostMapping("/employee")
