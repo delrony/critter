@@ -1,5 +1,6 @@
 package com.udacity.jdnd.course3.critter.pet;
 
+import com.udacity.jdnd.course3.critter.entity.Customer;
 import com.udacity.jdnd.course3.critter.entity.Pet;
 import com.udacity.jdnd.course3.critter.service.CustomerService;
 import com.udacity.jdnd.course3.critter.service.PetService;
@@ -75,7 +76,11 @@ public class PetController {
     private PetDTO getDTOFromPet(Pet pet) {
         PetDTO petDTO = new PetDTO();
         BeanUtils.copyProperties(pet, petDTO);
-        petDTO.setOwnerId(pet.getCustomer().getId());
+
+        Customer customer = pet.getCustomer();
+        if (customer != null) {
+            petDTO.setOwnerId(pet.getCustomer().getId());
+        }
 
         return petDTO;
     }

@@ -9,7 +9,7 @@ import com.udacity.jdnd.course3.critter.user.CustomerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +27,7 @@ public class PetService {
         this.customerRepository = customerRepository;
     }
 
+    @Transactional
     public Pet savePet(Pet pet, Long customerId) {
         if (customerId != 0) {
             Optional<Customer> optionalCustomer = this.customerRepository.findById(customerId);

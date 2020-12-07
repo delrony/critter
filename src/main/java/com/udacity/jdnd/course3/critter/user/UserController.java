@@ -85,6 +85,8 @@ public class UserController {
                 });
                 customerDTO.setPetIds(petIds);
             }
+        } else {
+            throw new CustomerNotFoundException();
         }
 
         return customerDTO;

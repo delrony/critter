@@ -8,6 +8,7 @@ import com.udacity.jdnd.course3.critter.repository.SchedultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class ScheduleService {
         this.petService = petService;
     }
 
+    @Transactional
     public Schedule saveSchedule(Schedule schedule, List<Long> employeeIds, List<Long> petIds) {
         List<Employee> employees = new ArrayList<>();
         employeeIds.forEach(employeeId -> {
