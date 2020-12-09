@@ -125,7 +125,7 @@ public class UserController {
         //throw new UnsupportedOperationException();
     }
 
-    @PostMapping("/employee/availability")
+    @GetMapping("/employee/availability")
     public List<EmployeeDTO> findEmployeesForService(@RequestBody EmployeeRequestDTO employeeDTO) {
 
         List<Employee> employees = this.employeeService.findEmployeeByDateAndSkills(employeeDTO.getDate(), employeeDTO.getSkills());

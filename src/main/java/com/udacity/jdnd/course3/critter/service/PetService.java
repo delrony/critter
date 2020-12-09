@@ -3,38 +3,32 @@ package com.udacity.jdnd.course3.critter.service;
 import com.udacity.jdnd.course3.critter.entity.Customer;
 import com.udacity.jdnd.course3.critter.entity.Pet;
 import com.udacity.jdnd.course3.critter.pet.PetNotFoundException;
-import com.udacity.jdnd.course3.critter.repository.CustomerRepository;
 import com.udacity.jdnd.course3.critter.repository.PetRepository;
-import com.udacity.jdnd.course3.critter.user.CustomerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class PetService {
     @Autowired
     PetRepository petRepository;
 
     @Autowired
-    CustomerRepository customerRepository;
+    CustomerService customerService;
 
-    public PetService(PetRepository petRepository, CustomerRepository customerRepository) {
+    public PetService(PetRepository petRepository, CustomerService customerService) {
         this.petRepository = petRepository;
-        this.customerRepository = customerRepository;
+        this.customerService = customerService;
     }
 
-    @Transactional
     public Pet savePet(Pet pet, Long customerId) {
         if (customerId != 0) {
-            Optional<Customer> optionalCustomer = this.customerRepository.findById(customerId);
-            if (!optionalCustomer.isPresent()) {
-                throw new CustomerNotFoundException("Customer not found for ID " + customerId);
-            }
-            Customer customer = optionalCustomer.get();
+            Customer customer = customerService.getCustomer(customerId);
 
             pet.setCustomer(customer);
             pet = this.petRepository.save(pet);
@@ -47,7 +41,7 @@ public class PetService {
                 pets.add(pet);
             }
             customer.setPets(pets);
-            this.customerRepository.save(customer);
+            this.customerService.saveCustomer(customer);
         } else {
             pet = this.petRepository.save(pet);
         }
@@ -69,11 +63,8 @@ public class PetService {
     }
 
     public List<Pet> getAllPetsByOwner(Long customerId) {
-        Optional<Customer> optionalCustomer = this.customerRepository.findById(customerId);
-        if (!optionalCustomer.isPresent()) {
-            throw new CustomerNotFoundException("Customer not found for ID " + customerId);
-        }
+        Customer customer = this.customerService.getCustomer(customerId);
 
-        return this.petRepository.findAllByCustomer(optionalCustomer.get());
+        return this.petRepository.findAllByCustomer(customer);
     }
 }
